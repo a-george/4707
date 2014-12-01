@@ -506,6 +506,23 @@ set_plan_refs(PlannerInfo *root, Plan *plan, int rtoffset)
 					fix_scan_expr(root, splan->limitCount, rtoffset);
 			}
 			break;
+			case T_Ignore:
+			{
+				Ignore	   *splan = (Ignore *) plan;
+
+				/*
+				 * Like the plan types above, Limit doesn't evaluate its tlist
+				 * or quals.  It does have live expressions for limit/offset,
+				 * however; and those cannot contain subplan variable refs, so
+				 * fix_scan_expr works for them.
+				 */
+				set_dummy_tlist_references(plan, rtoffset);
+				Assert(splan->plan.qual == NIL);
+
+				splan->ignoreClause =
+					fix_scan_expr(root, splan->ignoreClause, rtoffset);
+			}
+			break;
 		case T_Agg:
 		case T_Group:
 			set_upper_references(root, plan, rtoffset);

@@ -74,6 +74,8 @@ extern Unique *make_unique(Plan *lefttree, List *distinctList);
 extern LockRows *make_lockrows(Plan *lefttree, List *rowMarks, int epqParam);
 extern Limit *make_limit(Plan *lefttree, Node *limitOffset, Node *limitCount,
 		   int64 offset_est, int64 count_est);
+extern Ignore *make_ignore(Plan *lefttree, Node *ignoreClause,
+		   int64 ignore_est);
 extern SetOp *make_setop(SetOpCmd cmd, SetOpStrategy strategy, Plan *lefttree,
 		   List *distinctList, AttrNumber flagColIdx, int firstFlag,
 		   long numGroups, double outputRows);

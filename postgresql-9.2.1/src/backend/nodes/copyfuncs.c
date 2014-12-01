@@ -936,6 +936,28 @@ _copyLimit(const Limit *from)
 
 
 /*
+ * _copyIgnore
+ */
+static Ignore *
+_copyIgnore(const Ignore *from)
+{
+	Ignore	   *newnode = makeNode(Ignore);
+
+	/*
+	 * copy node superclass fields
+	 */
+	CopyPlanFields((const Plan *) from, (Plan *) newnode);
+
+	/*
+	 * copy remainder of node
+	 */
+	COPY_NODE_FIELD(ignoreClause);
+
+	return newnode;
+}
+
+
+/*
  * _copyNestLoopParam
  */
 static NestLoopParam *
@@ -2432,6 +2454,7 @@ _copyQuery(const Query *from)
 	COPY_NODE_FIELD(sortClause);
 	COPY_NODE_FIELD(limitOffset);
 	COPY_NODE_FIELD(limitCount);
+	COPY_NODE_FIELD(ignoreClause);
 	COPY_NODE_FIELD(rowMarks);
 	COPY_NODE_FIELD(setOperations);
 	COPY_NODE_FIELD(constraintDeps);
@@ -2500,6 +2523,7 @@ _copySelectStmt(const SelectStmt *from)
 	COPY_NODE_FIELD(sortClause);
 	COPY_NODE_FIELD(limitOffset);
 	COPY_NODE_FIELD(limitCount);
+	COPY_NODE_FIELD(ignoreClause);
 	COPY_NODE_FIELD(lockingClause);
 	COPY_SCALAR_FIELD(op);
 	COPY_SCALAR_FIELD(all);
@@ -3891,6 +3915,9 @@ copyObject(const void *from)
 			break;
 		case T_Limit:
 			retval = _copyLimit(from);
+			break;
+		case T_Ignore:
+			retval = _copyIgnore(from);
 			break;
 		case T_NestLoopParam:
 			retval = _copyNestLoopParam(from);

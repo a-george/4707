@@ -747,6 +747,19 @@ typedef struct Limit
 	Node	   *limitCount;		/* COUNT parameter, or NULL if none */
 } Limit;
 
+/* ----------------
+ *		ignore node
+ *
+ * Note: as of Postgres 8.2, the offset and count expressions are expected
+ * to yield int8, rather than int4 as before.
+ * ----------------
+ */
+typedef struct Ignore
+{
+	Plan		plan;
+	Node	   *ignoreClause;	/* IGNORE parameter, or NULL if none */
+} Ignore;
+
 
 /*
  * RowMarkType -

@@ -89,6 +89,7 @@
 #include "executor/nodeGroup.h"
 #include "executor/nodeHash.h"
 #include "executor/nodeHashjoin.h"
+#include "executor/nodeIgnore.h"
 #include "executor/nodeIndexonlyscan.h"
 #include "executor/nodeIndexscan.h"
 #include "executor/nodeLimit.h"
@@ -313,6 +314,11 @@ ExecInitNode(Plan *node, EState *estate, int eflags)
 			result = (PlanState *) ExecInitLimit((Limit *) node,
 												 estate, eflags);
 			break;
+			
+		case T_Ignore:
+			result = (PlanState *) ExecInitIgnore((Ignore *) node,
+												 estate, eflags);
+			break;
 
 		default:
 			elog(ERROR, "unrecognized node type: %d", (int) nodeTag(node));
@@ -497,6 +503,10 @@ ExecProcNode(PlanState *node)
 
 		case T_LimitState:
 			result = ExecLimit((LimitState *) node);
+			break;
+			
+		case T_IgnoreState:
+			result = ExecIgnore((IgnoreState *) node);
 			break;
 
 		default:
@@ -733,6 +743,10 @@ ExecEndNode(PlanState *node)
 
 		case T_LimitState:
 			ExecEndLimit((LimitState *) node);
+			break;
+			
+		case T_IgnoreState:
+			ExecEndIgnore((IgnoreState *) node);
 			break;
 
 		default:

@@ -819,6 +819,16 @@ _outLimit(StringInfo str, const Limit *node)
 	WRITE_NODE_FIELD(limitCount);
 }
 
+static void
+_outIgnore(StringInfo str, const Ignore *node)
+{
+	WRITE_NODE_TYPE("IGNORE");
+
+	_outPlanInfo(str, (const Plan *) node);
+
+	WRITE_NODE_FIELD(ignoreClause);
+}
+
 
 static void
 _outNestLoopParam(StringInfo str, const NestLoopParam *node)
@@ -2044,6 +2054,7 @@ _outSelectStmt(StringInfo str, const SelectStmt *node)
 	WRITE_NODE_FIELD(sortClause);
 	WRITE_NODE_FIELD(limitOffset);
 	WRITE_NODE_FIELD(limitCount);
+	WRITE_NODE_FIELD(ignoreClause);
 	WRITE_NODE_FIELD(lockingClause);
 	WRITE_ENUM_FIELD(op, SetOperation);
 	WRITE_BOOL_FIELD(all);
@@ -2231,6 +2242,7 @@ _outQuery(StringInfo str, const Query *node)
 	WRITE_NODE_FIELD(sortClause);
 	WRITE_NODE_FIELD(limitOffset);
 	WRITE_NODE_FIELD(limitCount);
+	WRITE_NODE_FIELD(ignoreClause);
 	WRITE_NODE_FIELD(rowMarks);
 	WRITE_NODE_FIELD(setOperations);
 	WRITE_NODE_FIELD(constraintDeps);
@@ -2811,6 +2823,9 @@ _outNode(StringInfo str, const void *obj)
 				break;
 			case T_Limit:
 				_outLimit(str, obj);
+				break;
+			case T_Ignore:
+				_outIgnore(str, obj);
 				break;
 			case T_NestLoopParam:
 				_outNestLoopParam(str, obj);

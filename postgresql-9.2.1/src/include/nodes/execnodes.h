@@ -1874,4 +1874,27 @@ typedef struct LimitState
 	TupleTableSlot *subSlot;	/* tuple last obtained from subplan */
 } LimitState;
 
+typedef enum
+{
+	IGNORE_INITIAL,				/* initial state for LIMIT node */
+	IGNORE_RESCAN,				/* rescan after recomputing parameters */
+	IGNORE_EMPTY,				/* there are no returnable rows */
+	IGNORE_INWINDOW,				/* have returned a row in the window */
+	IGNORE_SUBPLANEOF,			/* at EOF of subplan (within window) */
+	IGNORE_WINDOWEND,			/* stepped off end of window */
+	IGNORE_WINDOWSTART			/* stepped off beginning of window */
+} IgnoreStateCond;
+
+typedef struct IgnoreState
+{
+	PlanState	ps;				/* its first field is NodeTag */
+	ExprState  *ignoreClause;	/* IGNORE parameter, or NULL if none */
+	int64		k;				/* current OFFSET value */
+	int64		count;			/* current COUNT, if any */
+	bool		noCount;		/* if true, ignore count */
+	IgnoreStateCond lstate;		/* state machine status, as above */
+	int64		position;		/* 1-based index of last tuple returned */
+	TupleTableSlot *subSlot;	/* tuple last obtained from subplan */
+} IgnoreState;
+
 #endif   /* EXECNODES_H */

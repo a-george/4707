@@ -54,6 +54,7 @@ planner_hook_type planner_hook = NULL;
 #define EXPRKIND_VALUES		3
 #define EXPRKIND_LIMIT		4
 #define EXPRKIND_APPINFO	5
+#define EXPRKIND_IGNORE     6
 
 
 static Node *preprocess_expression(PlannerInfo *root, Node *expr, int kind);
@@ -64,6 +65,8 @@ static void preprocess_rowmarks(PlannerInfo *root);
 static double preprocess_limit(PlannerInfo *root,
 				 double tuple_fraction,
 				 int64 *offset_est, int64 *count_est);
+static double preprocess_ignoreClause(PlannerInfo *root, 
+				double tuple_fraction, int64 *ignore_est);
 static void preprocess_groupclause(PlannerInfo *root);
 static bool choose_hashed_grouping(PlannerInfo *root,
 					   double tuple_fraction, double limit_tuples,
@@ -432,6 +435,8 @@ subquery_planner(PlannerGlobal *glob, Query *parse,
 											   EXPRKIND_LIMIT);
 	parse->limitCount = preprocess_expression(root, parse->limitCount,
 											  EXPRKIND_LIMIT);
+	parse->ignoreClause = preprocess_expression(root, parse->ignoreClause,
+											  EXPRKIND_IGNORE);
 
 	root->append_rel_list = (List *)
 		preprocess_expression(root, (Node *) root->append_rel_list,
@@ -956,7 +961,9 @@ grouping_planner(PlannerInfo *root, double tuple_fraction)
 	List	   *tlist = parse->targetList;
 	int64		offset_est = 0;
 	int64		count_est = 0;
+	int64       ignore_est = 0;
 	double		limit_tuples = -1.0;
+	double      ignore_tuples = -1.0;
 	Plan	   *result_plan;
 	List	   *current_pathkeys;
 	double		dNumGroups = 0;
@@ -976,6 +983,13 @@ grouping_planner(PlannerInfo *root, double tuple_fraction)
 		if (count_est > 0 && offset_est >= 0)
 			limit_tuples = (double) count_est + (double) offset_est;
 	}
+	
+	if (parse->ignoreClause)
+	{
+		tuple_fraction = preprocess_ignoreClause(root, tuple_fraction,
+										  &ignore_est);
+									  }
+									  
 
 	if (parse->setOperations)
 	{
@@ -1784,6 +1798,13 @@ grouping_planner(PlannerInfo *root, double tuple_fraction)
 										  count_est);
 	}
 	
+	if (parse->ignoreClause)
+	{
+		result_plan = (Plan *) make_ignore(result_plan,
+										  parse->ignoreClause,
+										  ignore_est);
+	}
+	
 
 	/*
 	 * Return the actual output ordering in query_pathkeys for possible use by
@@ -2233,7 +2254,90 @@ preprocess_limit(PlannerInfo *root, double tuple_fraction,
  * 
  * Much like all other implementations thus far, this method
  * is based off of the logic for OFFSET in preprocess_limit.
- * /
+ */
+
+static double
+preprocess_ignoreClause(PlannerInfo *root, double tuple_fraction,
+				 int64 *ignore_est)
+{
+	Query	   *parse = root->parse;
+	Node	   *est;
+	double		ignore_fraction;
+
+	/* Should not be called unless IGNORE */
+	Assert(parse->ignoreClause);
+
+	est = estimate_expression_value(root, parse->ignoreClause);
+	if (est && IsA(est, Const))
+	{
+		if (((Const *) est)->constisnull)
+		{
+			/* Treat NULL as no offset; the executor will too */
+			*ignore_est = 0;	/* treat as not present */
+		}
+		else
+		{
+			*ignore_est = DatumGetInt64(((Const *) est)->constvalue);
+			if (*ignore_est < 0)
+				*ignore_est = 0;	/* less than 0 is same as 0 */
+		}
+	}
+	else
+		*ignore_est = -1;	/* can't estimate */
+
+	if (*ignore_est != 0 && tuple_fraction > 0.0)
+	{
+		/*
+		 * We have an OFFSET but no LIMIT.	This acts entirely differently
+		 * from the LIMIT case: here, we need to increase rather than decrease
+		 * the caller's tuple_fraction, because the OFFSET acts to cause more
+		 * tuples to be fetched instead of fewer.  This only matters if we got
+		 * a tuple_fraction > 0, however.
+		 *
+		 * As above, use 10% if IGNORE is present but unestimatable.
+		 */
+		if (*ignore_est < 0)
+			ignore_fraction = 0.10;
+		else
+			ignore_fraction = (double) *ignore_est;
+
+		/*
+		 * If we have absolute counts from both caller and OFFSET, add them
+		 * together; likewise if they are both fractional.	If one is
+		 * fractional and the other absolute, we want to take the larger, and
+		 * we heuristically assume that's the fractional one.
+		 */
+		if (tuple_fraction >= 1.0)
+		{
+			if (ignore_fraction >= 1.0)
+			{
+				/* both absolute, so add them together */
+				tuple_fraction += ignore_fraction;
+			}
+			else
+			{
+				/* caller absolute, limit fractional; use limit */
+				tuple_fraction = ignore_fraction;
+			}
+		}
+		else
+		{
+			if (ignore_fraction >= 1.0)
+			{
+				/* caller fractional, limit absolute; use caller's value */
+			}
+			else
+			{
+				/* both fractional, so add them together */
+				tuple_fraction += ignore_fraction;
+				if (tuple_fraction >= 1.0)
+					tuple_fraction = 0.0;		/* assume fetch all */
+			}
+		}
+	}
+
+	return tuple_fraction;	
+}
 
 
 

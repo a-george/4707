@@ -28,3 +28,35 @@ directory:
 	actually a general method designed to transform LIMIT and 'any 
 	allied expression' into type bigint. Thus, *ignoreClause can be 
 	transformed in analyze.c using this method.
+	
+### 2.2 PLANNER
+
+1. **/src/backend/optimizer/plan/planner.c**
+
+2. **/src/backend/optimizer/plan/createplan.c**
+
+3. **/src/backend/optimizer/plan/setrefs.c**
+
+4. **/src/include/nodes/plannodes.h**
+
+5. **/src/include/nodes/nodes.h**
+
+6. **/src/include/optimizer/planmain.h**
+
+### 2.3 EXECUTOR
+
+1. **/src/backend/executor/nodeIgnore.c**
+
+2. **/src/backend/executor/execProcnode.c**
+
+3. **/src/backend/executor/MakeFile**
+
+4. **/src/backend/nodes/copyfuncs.c**
+
+5. **/src/backend/nodes/equalfuncs.c**
+
+6. **/src/backend/nodes/outfuncs.c**
+
+7. **/src/include/executor/nodeIgnore.h**
+
+8. **/src/include/nodes/execnodes.h**
