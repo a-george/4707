@@ -1882,6 +1882,8 @@ query_tree_walker(Query *query,
 		return true;
 	if (walker(query->limitCount, context))
 		return true;
+    if (walker(query->ignoreClause, context))
+        return true;
 	if (!(flags & QTW_IGNORE_CTE_SUBQUERIES))
 	{
 		if (walker((Node *) query->cteList, context))
@@ -2590,6 +2592,7 @@ query_tree_mutator(Query *query,
 	MUTATE(query->havingQual, query->havingQual, Node *);
 	MUTATE(query->limitOffset, query->limitOffset, Node *);
 	MUTATE(query->limitCount, query->limitCount, Node *);
+    MUTATE(query->ignoreClause, query->ignoreClause, Node *);
 	if (!(flags & QTW_IGNORE_CTE_SUBQUERIES))
 		MUTATE(query->cteList, query->cteList, List *);
 	else	/* else copy CTE list as-is */
@@ -2919,6 +2922,8 @@ raw_expression_tree_walker(Node *node,
 					return true;
 				if (walker(stmt->limitCount, context))
 					return true;
+                if (walker(stmt->ignoreClause, context))
+                    return true;
 				if (walker(stmt->lockingClause, context))
 					return true;
 				if (walker(stmt->larg, context))
