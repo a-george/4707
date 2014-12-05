@@ -436,7 +436,7 @@ subquery_planner(PlannerGlobal *glob, Query *parse,
     parse->limitCount = preprocess_expression(root, parse->limitCount,
                                               EXPRKIND_LIMIT);
     parse->ignoreClause = preprocess_expression(root, parse->ignoreClause,
-                                                EXPRKIND_IGNORE);
+                                                EXPRKIND_LIMIT);
     
     root->append_rel_list = (List *)
     preprocess_expression(root, (Node *) root->append_rel_list,
@@ -986,8 +986,9 @@ grouping_planner(PlannerInfo *root, double tuple_fraction)
     
     if (parse->ignoreClause)
     {
-        tuple_fraction = preprocess_ignoreClause(root, tuple_fraction,
-                                                 &ignore_est);
+       tuple_fraction = preprocess_ignoreClause(root, tuple_fraction, &ignore_est);
+        if (ignore_est >= 0)
+            ignore_tuples = (double) ignore_est;
     }
     
     

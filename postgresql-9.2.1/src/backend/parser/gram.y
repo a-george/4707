@@ -8779,7 +8779,7 @@ simple_select						{ $$ = $1; }
     $$ = $2;
 }
 
-| select_clause select_ignore
+| select_clause ignore_clause
 {
     insertSelectOptions((SelectStmt *) $1, NULL, NIL,
     NULL, NULL, $2,
@@ -8841,7 +8841,7 @@ simple_select							{ $$ = $1; }
 simple_select:
 SELECT opt_distinct target_list
 into_clause from_clause where_clause
-group_clause having_clause window_clause
+group_clause having_clause window_clause 
 {
 				
                 /*
@@ -8953,6 +8953,7 @@ INTO OptTempTableName
 { $$ = NULL; }
 ;
 
+
 /*
  * Redundancy here is needed to avoid shift/reduce conflicts,
  * since TEMP is not a reserved word.  See also OptTemp.
@@ -9015,7 +9016,7 @@ opt_table:	TABLE									{}
 | /*EMPTY*/								{}
 ;
 
-opt_all:	ALL										{ $$ = TRUE; }
+opt_all:	ALL							{ $$ = TRUE; }
 | DISTINCT								{ $$ = FALSE; }
 | /*EMPTY*/								{ $$ = FALSE; }
 ;
@@ -9143,7 +9144,7 @@ c_expr									{ $$ = $1; }
 
 ignore_clause:
 IGNORE select_ignore_value
-                                        { $$ = $1; }
+                                        { $$ = $2; }
 ;
 
 select_ignore:
@@ -9249,7 +9250,7 @@ FROM from_list							{ $$ = $2; }
 ;
 
 from_list:
-table_ref								{ $$ = list_make1($1); }
+table_ref								{ $$ = list_make1($1);  }
 | from_list ',' table_ref				{ $$ = lappend($1, $3); }
 ;
 
@@ -13018,8 +13019,7 @@ extractArgTypes(List *parameters)
 static void
 insertSelectOptions(SelectStmt *stmt,
 List *sortClause, List *lockingClause,
-Node *limitOffset, Node *limitCount,
-Node *ignoreClause,
+Node *limitOffset, Node *limitCount, Node *ignoreClause,
 WithClause *withClause,
 core_yyscan_t yyscanner)
 {
@@ -13059,7 +13059,7 @@ core_yyscan_t yyscanner)
         stmt->limitCount = limitCount;
     }
     
-    /* if (ignoreClause)
+    if (ignoreClause)
     {
         if (stmt->ignoreClause)
         ereport(ERROR,
@@ -13067,7 +13067,7 @@ core_yyscan_t yyscanner)
         errmsg("multiple IGNORE clauses not allowed"),
         parser_errposition(exprLocation(ignoreClause))));
         stmt->ignoreClause = ignoreClause;
-    } */
+    } 
     
     if (withClause)
     {
