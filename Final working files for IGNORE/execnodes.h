@@ -1876,7 +1876,7 @@ typedef struct LimitState
 
 typedef enum
 {
-    IGNORE_INITIAL,				/* initial state for LIMIT node */
+    IGNORE_INITIAL,				/* initial state for IGNORE node */
     IGNORE_RESCAN,				/* rescan after recomputing parameters */
     IGNORE_EMPTY,				/* there are no returnable rows */
     IGNORE_INWINDOW,				/* have returned a row in the window */
