@@ -66,7 +66,6 @@ directory:
 
 1. **/src/backend/executor/nodeIgnore.c**: Contains the Definition of IGNORE. It contains the basic function to Execute Ignore such as ExecIgnore, ExecInitIgnore and ExecEndIgnore. This extracts a range of tuples, initilizes the nodes and subnodes and then shutsdown the nodes and subnodes after execution. 
 
-
 2. **/src/backend/executor/execProcnode.c**: Indicates which process should execute 
 	when given an Ignore node. Updated to include nodeIgnore.h. Added case for the Ignore node so the executor knows which states to run on each of the ExecInit, ExecProcNode, and ExecEndNode. ExecInit to run the ExecInitIgnore from the previous step. ExecProcNode to execute ExecIgnore which executes the given node. ExecEndNode to execute the function ExecEndIgnore so it can clean up all the nodes.
 
