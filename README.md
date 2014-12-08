@@ -89,3 +89,11 @@ directory:
 	IGNORE. Must edit this file because every node that has a output function must also have a input function. 
 
 10. **/src/include/nodes/execnodes.h**: Added some structs for IgnoreState in order to initialize, rescan, empty, inwindow, subplaneog, windowend, and windowstart. 
+
+
+TESTING
+SELECT * FROM Student IGNORE 10
+The test cases that we tried were simple SQL queries. We can run any test cases where we give it a WHERE clause. 
+Ignore has to be an integer and it must be a positive integer. It can also be zero. Ignore only works with simple SELECT statements. Ignore also works when we enter a value that is greater than the number of values in the table. We tested it for large values where SELECT * FROM Student IGNORE 100 and this value gave us the desired output.  
+
+
