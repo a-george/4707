@@ -1,7 +1,9 @@
-4707
-====
+4707 Lab 4
+==========
 
-IGNORE is exactly like LIMIT/OFFSET when only offset is used (eg. SELECT / FROM / WHERE / OFFSET k is pretty much IGNORE.) There's a post about it on the moodle forum. So, all of the LIMIT/OFFSET code was copy-pasted and simply adjusted to be for IGNORE instead by changing variable names. This doesn't compute IGNORE yet - the code need to be cleaned up to mimic the case where OFFSET is called without LIMIT. 
+IGNORE is exactly like LIMIT/OFFSET when only offset is used (eg. SELECT / FROM / WHERE / OFFSET k is pretty much IGNORE.) There's a post about it on the moodle forum. So, all of the IGNORE code is very similar to the OFFSET
+    code, with changes as necessary. 
+
 
 List of files edited, as well as their locations in the postgresql-9.2.1 
 directory:
@@ -9,35 +11,43 @@ directory:
 ### 2.1 PARSER
 
 1. **/src/backend/parser/gram.y**: Contains the PostgreSQL grammar.
-	Should be working for simple IGNORE statements.
+	Should be working for simple IGNORE statements, as listed below.
 	
 2. **/src/backend/parser/gram.output**: Used for debugging purposes with 
 	bison in order to resolve shift/reduce and reduce/reduce conflicts 
 	in the grammar caused by the precedence of the IGNORE operation. 
+    This file has since been deleted, as it is no longer needed for 
+    debugging purposes.
 	
 3. **/src/backend/parser/gram.dot**: Graphical representation of the 
-	grammar. Do not open, it will crash.
+	grammar. Do not open, it will crash. This file has since been 
+    deleted, as it is no longer needed for debugging purposes.
 	
 4. **/src/include/parser/kwlist.h**: Contains the added IGNORE keyword.
+    This file contains a simple list of keywords in alphabetical order.
 	
-5. **/src/include/nodes/parsenodes.h**: Adds a node for the IGNORE clause 
+5. **/src/include/nodes/parsenodes.h**: Adds a node for the IGNORE clause (*ignoreClause) 
 	to the Query struct so that it can be formulated into a query tree 
-	for further processing by the rewriter and the planner. 
+	for further processing by the rewriter and the planner. Also adds
+    adds an ignoreClause node to the struct for SELECT statements.
 	
-6. **/src/backend/parser/analyze.c**: Transforms *ignoreClause into 
-	something that can be parsed by the query tree.
+6. **/src/backend/parser/analyze.c**: Transforms an *ignoreClause node into 
+	something that can be parsed by the query tree. Adds *ignoreClause 
+    to general SELECT statements in isGeneralSelect, and a call to
+    transformLimitClause for *ignoreClause. See the following file for 
+    further explaination. 
 
 7. **/src/backend/parser/parse_clause.c**: This file did not actually need 
 	to be edited per the lab handout, since transformLimitClause is 
 	actually a general method designed to transform LIMIT and 'any 
-	allied expression' into type bigint. Thus, *ignoreClause can be 
+	allied expression' into type bigint. Thus, IGNORE / *ignoreClause can be 
 	transformed in analyze.c using this method.
 	
 ### 2.2 PLANNER
 
 1. **/src/backend/optimizer/plan/planner.c**: Added preprocess_IgnoreClause. 
-	Prepares IGNORE for the query tree. Copy of the LIMIT/OFFSET code, but changed
-	to be for IGNORE. Some of the original LIMIT/OFFSET comments were left in.
+	Prepares IGNORE for the query tree. Similar to the LIMIT/OFFSET code, but changed
+	to be for IGNORE. See comments in the code for specifics.
 
 2. **/src/backend/optimizer/plan/createplan.c**: Builds an Ignore plan node.
 
