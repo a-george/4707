@@ -63,10 +63,8 @@ directory:
 
 ### 2.3 EXECUTOR
 
-1. **/src/backend/executor/nodeIgnore.c**: Definition of IGNORE. Basically copy 
-	and pasted exactly from nodeLimit.c, but all the variable names are changed 
-	for IGNORE. This file needs major edits because it's likely where all 
-	the logic for IGNORE takes place.
+1. **/src/backend/executor/nodeIgnore.c**: Contains the Definition of IGNORE. It contains the basic function to Execute Ignore such as ExecIgnore, ExecInitIgnore and ExecEndIgnore. This extracts a range of tuples, initilizes the nodes and subnodes and then shutsdown the nodes and subnodes after execution. 
+
 
 2. **/src/backend/executor/execProcnode.c**: Indicates which process should execute 
 	when given an Ignore node.
