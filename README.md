@@ -66,18 +66,18 @@ directory:
 
 1. **/src/backend/executor/nodeIgnore.c**: Contains the Definition of IGNORE. It contains the basic function to Execute Ignore such as ExecIgnore, ExecInitIgnore and ExecEndIgnore. This extracts a range of tuples, initilizes the nodes and subnodes and then shutsdown the nodes and subnodes after execution. 
 
+
 2. **/src/backend/executor/execProcnode.c**: Indicates which process should execute 
 	when given an Ignore node. Updated to include nodeIgnore.h. Added case for the Ignore node so the executor knows which states to run on each of the ExecInit, ExecProcNode, and ExecEndNode. ExecInit to run the ExecInitIgnore from the previous step. ExecProcNode to execute ExecIgnore which executes the given node. ExecEndNode to execute the function ExecEndIgnore so it can clean up all the nodes.
 
 3. **/src/backend/executor/MakeFile**: Updated to include nodeIgnore.c and 
 	nodeIgnore.h.
 
-4. **/src/backend/nodes/copyfuncs.c**: Added _copyIgnore
+4. **/src/backend/nodes/copyfuncs.c**: Added _copyIgnore. Copies the ignore node from the superclass and copies the remainder of the node. 
 
-5. **/src/backend/nodes/equalfuncs.c**: Added some calls for any ignore nodes. This 
-	probably won't need further editing.
+5. **/src/backend/nodes/equalfuncs.c**: Added some calls for any ignore nodes. Added calls for ignore in _equalQuery and _equalSelectStmt.  
 
-6. **/src/backend/nodes/outfuncs.c**: Added _outIgnore
+6. **/src/backend/nodes/outfuncs.c**: Added _outIgnore. Added an output function for ignore. 
 
 7. **/src/include/executor/nodeIgnore.h**: Header file for nodeIgnore.c.
 
@@ -85,9 +85,7 @@ directory:
 	be edited to avoid crashing/compiling without errors. Added two lines for 
 	IGNORE clauses. Don't think this file will need further editing.
 
-9. **/src/backend/nodes/readfuncs.c**: Not in the lab handout, but needed to 
-	be edited to avoid crashing/compiling without errors. Added only 1 line for 
-	IGNORE. This file probably won't need further editing.
+9. **/src/backend/nodes/readfuncs.c**: Not in lab handout, but needed to avoid compling errors. Added only 1 line for 
+	IGNORE. Must edit this file because every node that has a output function must also have a input function. 
 
-10. **/src/include/nodes/execnodes.h**: Added some structs for IgnoreState. This 
-	file will likely need some editing, since it's a copy/paste of LIMIT/OFFSET.
+10. **/src/include/nodes/execnodes.h**: Added some structs for IgnoreState in order to initialize, rescan, empty, inwindow, subplaneog, windowend, and windowstart. 
