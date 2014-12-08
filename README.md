@@ -54,7 +54,8 @@ directory:
 3. **/src/backend/optimizer/plan/setrefs.c**: Added code for IGNORE which is 
 	basically a copy of the OFFSET code. this file probably needs tweaking...
 
-4. **/src/include/nodes/plannodes.h**: Definition of the Ignore node struct.
+4. **/src/include/nodes/plannodes.h**: Definition of the Ignore node struct for the 
+    planner.
 
 5. **/src/include/nodes/nodes.h**: Just adds the Ignore nodes to a list of nodes.
 
