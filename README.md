@@ -9,9 +9,7 @@ directory:
 ### 2.1 PARSER
 
 1. **/src/backend/parser/gram.y**: Contains the PostgreSQL grammar.
-	Should be working for simple IGNORE statements (eg. SELECT / FROM / 
-	WHERE / IGNORE k will work without an error message, but just won't 
-	ignore anything yet - it'll process the SELECT query like usual, though.)
+	Should be working for simple IGNORE statements.
 	
 2. **/src/backend/parser/gram.output**: Used for debugging purposes with 
 	bison in order to resolve shift/reduce and reduce/reduce conflicts 
