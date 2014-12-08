@@ -68,10 +68,10 @@ directory:
 
 
 2. **/src/backend/executor/execProcnode.c**: Indicates which process should execute 
-	when given an Ignore node.
+	when given an Ignore node. Updated to include nodeIgnore.h. Added case for the Ignore node so the executor knows which states to run on each of the ExecInit, ExecProcNode, and ExecEndNode. ExecInit to run the ExecInitIgnore from the previous step. ExecProcNode to execute ExecIgnore which executes the given node. ExecEndNode to execute the function ExecEndIgnore so it can clean up all the nodes.
 
 3. **/src/backend/executor/MakeFile**: Updated to include nodeIgnore.c and 
-	nodeIgnore.h. Doesn't need further editing.
+	nodeIgnore.h.
 
 4. **/src/backend/nodes/copyfuncs.c**: Added _copyIgnore
 
