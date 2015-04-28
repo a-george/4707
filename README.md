@@ -1,6 +1,9 @@
 CSCI 4707: Lab 4
 ==========
 
+**Note:** I am making this repository public, since it appears that the course is not doing this lab 		anymore. I am not certain whether this is an assignment that is used at other schools. If it is, please contact me if 	you would like me to remove our solution and I will be happy to do so.
+
+
 1. OBJECTIVE
 ------------
 Implement the keyword IGNORE in postgreSQL. The general form of an IGNORE statement is as follows,
@@ -15,8 +18,6 @@ where k is a positive integer. When IGNORE is used, the first k tuples of the re
 IGNORE behaves like LIMIT/OFFSET when only offset is used (eg. SELECT / FROM / WHERE / OFFSET k is pretty much 		IGNORE.) There's a post about it on the moodle forum. So, all of the IGNORE code is very similar to the OFFSET
 code, with changes as necessary. 
     
-<strong>Note:</strong> I am making this repository public, since it appears that the course is not doing this lab 		anymore. I am not certain whether this is an assignment that is used at other schools. If it is, please contact me if 	you would like me to remove our solution and I will be happy to do so.
-
 2. EDITED FILES
 ---------------
 
