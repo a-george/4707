@@ -1,7 +1,8 @@
-4707 Lab 4
+CSCI 4707: Lab 4
 ==========
 
-### Objective
+1. OBJECTIVE
+------------
 Implement the keyword IGNORE in postgreSQL. The general form of an IGNORE statement is as follows,
 
 			SELECT (target list)
@@ -16,7 +17,8 @@ code, with changes as necessary.
     
 <strong>Note:</strong> I am making this repository public, since it appears that the course is not doing this lab 		anymore. I am not certain whether this is an assignment that is used at other schools. If it is, please contact me if 	you would like me to remove our solution and I will be happy to do so.
 
-### 2. EDITED FILES
+2. EDITED FILES
+---------------
 
 A list of files edited and the rationale behind the edits, as well as the file locations in the postgresql-9.2.1 		directory.
 
@@ -105,7 +107,8 @@ A list of files edited and the rationale behind the edits, as well as the file l
 	on an Ignore node. These are all necessary functions for executing  
 
 
-### 3. TESTING
+3. TESTING
+----------
 
 The test cases that we tried were simple SQL queries of the following form:
 
